@@ -2,7 +2,7 @@
     "name": "afrux/online-users-widget",
     "description": "Forum Widget That Lists Online Users",
     "keywords": [
-        "flarum"
+        "flarum", "widget", "online", "users"
     ],
     "funding": [
         {
@@ -48,7 +48,7 @@
         },
         "flarum-extension": {
             "title": "Online Users Widget",
-            "category": "features",
+            "category": "forum-widget",
             "icon": {
                 "name": "fas fa-user-friends",
                 "backgroundColor": "#e34b6e",
