@@ -17,7 +17,7 @@ composer require afrux/online-users-widget:"*"
 ## Updating
 
 ```sh
-composer update afrux/online-users-widget:"*"
+composer update afrux/online-users-widget:"*" --with-dependencies
 php flarum migrate
 php flarum cache:clear
 ```
