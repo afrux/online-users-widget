@@ -1,10 +1,12 @@
 <?php
 
 /*
- * This file is part of Afrux Online Users Widget.
+ * This file is part of afrux/online-users-widget.
  *
- * For detailed copyright and license information, please view the
- * LICENSE file that was distributed with this source code.
+ * Copyright (c) 2021 Sami Mazouz.
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
  */
 
 namespace Afrux\OnlineUsers\Query;
