@@ -54,9 +54,6 @@
                 "backgroundColor": "#e34b6e",
                 "color": "#fff"
             }
-        },
-        "flagrow": {
-            "discuss": ""
         }
     },
     "scripts": {
