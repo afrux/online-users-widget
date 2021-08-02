@@ -1,6 +1,6 @@
 # Online Users Widget
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/afrux/online-users-widget.svg)](https://packagist.org/packages/afrux/online-users-widget) [![Total Downloads](https://img.shields.io/packagist/dt/afrux/online-users-widget.svg)](https://packagist.org/packages/afrux/online-users-widget)[![donate](https://img.shields.io/badge/donate-buy%20me%20a%20coffee-%23ffde39?style=flat-square)](https://www.buymeacoffee.com/sycho)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/afrux/online-users-widget.svg)](https://packagist.org/packages/afrux/online-users-widget) [![Total Downloads](https://img.shields.io/packagist/dt/afrux/online-users-widget.svg)](https://packagist.org/packages/afrux/online-users-widget) [![donate](https://img.shields.io/badge/donate-buy%20me%20a%20coffee-%23ffde39?style=flat-square)](https://www.buymeacoffee.com/sycho)
 
 A [Flarum](http://flarum.org) extension. Forum Widget That Lists Online Users.
 
