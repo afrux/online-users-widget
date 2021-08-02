@@ -4,6 +4,8 @@
 
 A [Flarum](http://flarum.org) extension. Forum Widget That Lists Online Users.
 
+![flarum lan_ (3)](https://user-images.githubusercontent.com/20267363/127892981-e536c329-17bd-4ecf-ae5d-f295e26f8d1b.png)
+
 ## Installation
 
 This will also install [Forum Widgets Core](https://github.com/afrux/forum-widgets-core) as it relies on it.
