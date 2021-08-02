@@ -5,9 +5,9 @@ import avatar from 'flarum/common/helpers/avatar';
 import Link from 'flarum/common/components/Link';
 import type User from 'flarum/common/models/User';
 
-import Widget from 'flarum/extensions/afrux-forum-widgets-core/common/components/Widget';
+import Widget, { WidgetAttrs } from 'flarum/extensions/afrux-forum-widgets-core/common/components/Widget';
 
-export default class OnlineUsersWidget extends Widget {
+export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> {
   oninit(vnode: Mithril.VnodeDOM): void {
     super.oninit(vnode);
 
@@ -42,21 +42,25 @@ export default class OnlineUsersWidget extends Widget {
     }
 
     const max = app.forum.attribute('afrux-online-users-widget.maxUsers') || 15;
-
-    console.log(max);
+    const users = this.attrs.state.users;
 
     return (
       <div className="Afrux-OnlineUsersWidget-users">
-        {this.attrs.state.users.slice(0, max).map((user: User) => (
-          <Link href={app.route('user', { username: user.slug() })} className="Afrux-OnlineUsersWidget-users-item">
-            <Tooltip text={user.displayName()}>{avatar(user)}</Tooltip>
-          </Link>
-        ))}
-        {this.attrs.state.users.length > max ? (
-          <span className="Afrux-OnlineUsersWidget-users-item Afrux-OnlineUsersWidget-users-item--plus">
-            <span className="Avatar">{`+${max}`}</span>
-          </span>
-        ) : null}
+        <div className="Afrux-OnlineUsersWidget-users-message">
+          {users.length === 0 ? app.translator.trans('afrux-online-users-widget.forum.widget.empty') : null}
+        </div>
+        <div className="Afrux-OnlineUsersWidget-users-list">
+          {users.slice(0, max).map((user: User) => (
+            <Link href={app.route('user', { username: user.slug() })} className="Afrux-OnlineUsersWidget-users-item">
+              <Tooltip text={user.displayName()}>{avatar(user)}</Tooltip>
+            </Link>
+          ))}
+          {users.length > max ? (
+            <span className="Afrux-OnlineUsersWidget-users-item Afrux-OnlineUsersWidget-users-item--plus">
+              <span className="Avatar">{`+${max}`}</span>
+            </span>
+          ) : null}
+        </div>
       </div>
     );
   }

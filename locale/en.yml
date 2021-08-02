@@ -6,3 +6,4 @@ afrux-online-users-widget:
   forum:
     widget:
       title: Online Users
+      empty: No Users Currently Online.
