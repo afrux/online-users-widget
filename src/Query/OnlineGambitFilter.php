@@ -16,11 +16,22 @@ use Flarum\Filter\FilterInterface;
 use Flarum\Filter\FilterState;
 use Flarum\Search\AbstractRegexGambit;
 use Flarum\Search\SearchState;
+use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\User;
 use Illuminate\Database\Query\Builder;
 
 class OnlineGambitFilter extends AbstractRegexGambit implements FilterInterface
 {
+    /**
+     * @var SettingsRepositoryInterface
+     */
+    protected $settings;
+
+    public function __construct(SettingsRepositoryInterface $settings)
+    {
+        $this->settings = $settings;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -66,6 +77,7 @@ class OnlineGambitFilter extends AbstractRegexGambit implements FilterInterface
     protected function constrain(Builder $query, ?bool $negate = false)
     {
         $time = Carbon::now()->subMinutes(5);
+        $limit = $this->settings->get('afrux-online-users-widget.max_users', 15);
 
         // @TODO this is a temporary solution because the preferences are stored in a binary,
         // so we can't access individual users's discloseOnline preference, this should be perfected
@@ -73,6 +85,8 @@ class OnlineGambitFilter extends AbstractRegexGambit implements FilterInterface
         $lastSeenUsers = User::query()
             ->select('id', 'preferences')
             ->where('last_seen_at', $negate ? '<=' : '>', $time)
+            ->orderBy('last_seen_at', 'desc')
+            ->limit($limit + 1)
             ->get()
             ->filter(function ($user) {
                 return (bool) $user->getPreference('discloseOnline');
