@@ -12,7 +12,7 @@ export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> 
     super.oninit(vnode);
 
     this.attrs.state.users ??= [];
-    this.attrs.state.isLoading ??= false;
+    this.attrs.state.isLoading ??= true;
     this.attrs.state.hasLoaded ??= false;
   }
 
@@ -20,7 +20,7 @@ export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> 
     super.oncreate(vnode);
 
     if (!this.attrs.state.hasLoaded) {
-      this.load();
+      setTimeout(this.load.bind(this), 300);
     }
   }
 
