@@ -11,6 +11,7 @@ export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> 
   oninit(vnode: Mithril.VnodeDOM): void {
     super.oninit(vnode);
 
+    this.loadWithInitialResponse = app.forum.attribute('afrux-forum-widgets-core.preferDataWithInitialLoad');
     this.attrs.state.users ??= [];
     this.attrs.state.isLoading ??= true;
     this.attrs.state.hasLoaded ??= false;
@@ -20,7 +21,7 @@ export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> 
     super.oncreate(vnode);
 
     if (!this.attrs.state.hasLoaded) {
-      setTimeout(this.load.bind(this), 300);
+      setTimeout(this.load.bind(this), this.loadWithInitialResponse ? 0 : 300);
     }
   }
 
@@ -66,13 +67,22 @@ export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> 
   }
 
   load(): void {
+    if (this.loadWithInitialResponse) {
+      this.setResults(app.forum.onlineUsers());
+      return;
+    }
+
     this.attrs.state.isLoading = true;
 
     app.store.find('users', { filter: { online: true }, sort: '-lastSeenAt' }).then((users: User[]) => {
-      this.attrs.state.users = users;
-      this.attrs.state.isLoading = false;
-      this.attrs.state.hasLoaded = true;
-      m.redraw();
+      this.setResults(users);
     });
+  }
+
+  setResults(users) {
+    this.attrs.state.users = users;
+    this.attrs.state.isLoading = false;
+    this.attrs.state.hasLoaded = true;
+    m.redraw();
   }
 }

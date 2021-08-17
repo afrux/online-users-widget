@@ -11,25 +11,24 @@
 
 namespace Afrux\OnlineUsers\Query;
 
-use Carbon\Carbon;
+use Afrux\OnlineUsers\UserRepository;
 use Flarum\Filter\FilterInterface;
 use Flarum\Filter\FilterState;
 use Flarum\Search\AbstractRegexGambit;
 use Flarum\Search\SearchState;
-use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\User;
 use Illuminate\Database\Query\Builder;
 
 class OnlineGambitFilter extends AbstractRegexGambit implements FilterInterface
 {
     /**
-     * @var SettingsRepositoryInterface
+     * @var UserRepository
      */
-    protected $settings;
+    protected $repository;
 
-    public function __construct(SettingsRepositoryInterface $settings)
+    public function __construct(UserRepository $repository)
     {
-        $this->settings = $settings;
+        $this->repository = $repository;
     }
 
     /**
@@ -57,7 +56,7 @@ class OnlineGambitFilter extends AbstractRegexGambit implements FilterInterface
      */
     protected function conditions(SearchState $search, array $matches, $negate)
     {
-        $this->constrain($search->getQuery(), $matches[1], $negate);
+        $this->constrain($search->getQuery(), $search->getActor(), $negate);
     }
 
     public function getFilterKey(): string
@@ -71,27 +70,16 @@ class OnlineGambitFilter extends AbstractRegexGambit implements FilterInterface
             return;
         }
 
-        $this->constrain($filterState->getQuery(), $negate);
+        $this->constrain($filterState->getQuery(), $filterState->getActor(), $negate);
     }
 
-    protected function constrain(Builder $query, ?bool $negate = false)
+    protected function constrain(Builder $query, User $actor, ?bool $negate = false)
     {
-        $time = Carbon::now()->subMinutes(5);
-        $limit = $this->settings->get('afrux-online-users-widget.max_users', 15);
-
         // @TODO this is a temporary solution because the preferences are stored in a binary,
         // so we can't access individual users's discloseOnline preference, this should be perfected
         // when flarum core improves the way it stores preferences.
-        $lastSeenUsers = User::query()
-            ->select('id', 'preferences')
-            ->where('last_seen_at', $negate ? '<=' : '>', $time)
-            ->limit($limit + 1)
-            ->get()
-            ->filter(function ($user) {
-                return (bool) $user->getPreference('discloseOnline');
-            })
-            ->pluck('id');
+        $lastSeenUsers = $this->repository->getLastSeenUsers($actor);
 
-        $query->whereIn('id', $lastSeenUsers->toArray());
+        $query->whereIn('id', $lastSeenUsers);
     }
 }
