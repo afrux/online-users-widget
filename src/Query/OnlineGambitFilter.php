@@ -85,7 +85,6 @@ class OnlineGambitFilter extends AbstractRegexGambit implements FilterInterface
         $lastSeenUsers = User::query()
             ->select('id', 'preferences')
             ->where('last_seen_at', $negate ? '<=' : '>', $time)
-            ->orderBy('last_seen_at', 'desc')
             ->limit($limit + 1)
             ->get()
             ->filter(function ($user) {
