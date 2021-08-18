@@ -10,8 +10,7 @@ export default function (app) {
       isDisabled: () => {
         const loadWithInitialResponse = app.forum.attribute('afrux-forum-widgets-core.preferDataWithInitialLoad');
 
-        return
-          (!loadWithInitialResponse && (!app.forum.attribute('canViewLastSeenAt') || !app.forum.attribute('canSearchUsers')))
+        return (!loadWithInitialResponse && (!app.forum.attribute('canViewLastSeenAt') || !app.forum.attribute('canSearchUsers')))
           ||
           (loadWithInitialResponse && !app.forum.onlineUsers().length);
       },
