@@ -40,6 +40,6 @@ class LoadForumOnlineUsersRelationship
 
         $actor = RequestUtil::getActor($request);
 
-        $data['onlineUsers'] = $this->repository->getOnlineUsers($actor);
+        $data['onlineUsers'] = $this->repository->getOnlineUsers($actor) ?: null;
     }
 }
