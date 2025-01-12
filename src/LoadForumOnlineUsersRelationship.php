@@ -23,6 +23,11 @@ class LoadForumOnlineUsersRelationship
      */
     protected $settings;
 
+    /**
+    * @var UserRepository
+    */
+    protected $repository;
+
     public function __construct(SettingsRepositoryInterface $settings, UserRepository $repository)
     {
         $this->settings = $settings;
