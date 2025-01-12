@@ -36,15 +36,6 @@ class LoadForumOnlineUsersRelationship
 
     public function __invoke(ShowForumController $controller, &$data, ServerRequestInterface $request)
     {
-        $loadWithInitialResponse = $this->settings->get('afrux-forum-widgets-core.prefer_data_with_initial_load', false);
-
-        if (! $loadWithInitialResponse) {
-            $data['onlineUsers'] = [];
-            return;
-        }
-
-        $actor = RequestUtil::getActor($request);
-
-        $data['onlineUsers'] = $this->repository->getOnlineUsers($actor) ?: null;
+        $data['onlineUsers'] = $this->repository->getOnlineUsers(RequestUtil::getActor($request)) ?: null;
     }
 }

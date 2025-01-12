@@ -29,8 +29,8 @@ return [
     new Extend\Locales(__DIR__.'/locale'),
 
     (new Extend\ApiSerializer(FlarumSerializer\ForumSerializer::class))
-        ->attribute('canViewLastSeenAt', function ($serializer) {
-            return $serializer->getActor()->hasPermission('user.viewLastSeenAt');
+        ->attribute('canViewOnlineUsersWidget', function ($serializer) {
+            return $serializer->getActor()->hasPermission('viewOnlineUsersWidget');
         })
         ->hasMany('onlineUsers', FlarumSerializer\UserSerializer::class),
 
@@ -39,11 +39,8 @@ return [
         ->prepareDataForSerialization(LoadForumOnlineUsersRelationship::class),
 
     (new Extend\Settings)
-        ->serializeToForum('afrux-online-users-widget.maxUsers', 'afrux-online-users-widget.max_users', 'intval'),
-
-    (new Extend\Filter(UserFilterer::class))
-        ->addFilter(Query\OnlineGambitFilter::class),
-
-    (new Extend\SimpleFlarumSearch(UserSearcher::class))
-        ->addGambit(Query\OnlineGambitFilter::class),
+        ->default('afrux-online-users-widget.max_users', 15)
+        ->default('afrux-online-users-widget.cache_ttl', 30)
+        ->default('afrux-online-users-widget.last_seen_interval', 5)
+        ->serializeToForum('afrux-online-users-widget.max_users', 'afrux-online-users-widget.max_users', 'intval'),
 ];

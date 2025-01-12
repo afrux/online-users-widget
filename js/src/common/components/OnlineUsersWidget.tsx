@@ -1,30 +1,15 @@
-import * as Mithril from 'mithril';
+import app from 'flarum/common/app';
+import type Mithril from 'mithril';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Tooltip from 'flarum/common/components/Tooltip';
 import avatar from 'flarum/common/helpers/avatar';
 import Link from 'flarum/common/components/Link';
+import extractText from 'flarum/common/utils/extractText';
 import type User from 'flarum/common/models/User';
 
-import Widget, { WidgetAttrs } from 'flarum/extensions/afrux-forum-widgets-core/common/components/Widget';
+import Widget, { type WidgetAttrs } from 'flarum/extensions/afrux-forum-widgets-core/common/components/Widget';
 
-export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> {
-  oninit(vnode: Mithril.VnodeDOM): void {
-    super.oninit(vnode);
-
-    this.loadWithInitialResponse = app.forum.attribute('afrux-forum-widgets-core.preferDataWithInitialLoad');
-    this.attrs.state.users ??= [];
-    this.attrs.state.isLoading ??= true;
-    this.attrs.state.hasLoaded ??= false;
-  }
-
-  oncreate(vnode): void {
-    super.oncreate(vnode);
-
-    if (!this.attrs.state.hasLoaded) {
-      setTimeout(this.load.bind(this), this.loadWithInitialResponse ? 0 : 300);
-    }
-  }
-
+export default class OnlineUsersWidget extends Widget<WidgetAttrs> {
   className(): string {
     return 'Afrux-OnlineUsersWidget';
   }
@@ -33,8 +18,8 @@ export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> 
     return 'fas fa-user-friends';
   }
 
-  title(): string | null {
-    return app.translator.trans('afrux-online-users-widget.forum.widget.title');
+  title(): string {
+    return extractText(app.translator.trans('afrux-online-users-widget.forum.widget.title'));
   }
 
   content(): Mithril.Children {
@@ -42,8 +27,8 @@ export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> 
       return <LoadingIndicator />;
     }
 
-    const max = app.forum.attribute('afrux-online-users-widget.maxUsers') || 15;
-    const users = this.attrs.state.users;
+    const max = app.forum.attribute<number>('afrux-online-users-widget.max_users') || 15;
+    const users = app.forum.onlineUsers() || [];
 
     return (
       <div className="Afrux-OnlineUsersWidget-users">
@@ -64,25 +49,5 @@ export default class OnlineUsersWidget<T extends WidgetAttrs> extends Widget<T> 
         </div>
       </div>
     );
-  }
-
-  load(): void {
-    if (this.loadWithInitialResponse) {
-      this.setResults(app.forum.onlineUsers());
-      return;
-    }
-
-    this.attrs.state.isLoading = true;
-
-    app.store.find('users', { filter: { online: true }, sort: '-lastSeenAt' }).then((users: User[]) => {
-      this.setResults(users);
-    });
-  }
-
-  setResults(users) {
-    this.attrs.state.users = users;
-    this.attrs.state.isLoading = false;
-    this.attrs.state.hasLoaded = true;
-    m.redraw();
   }
 }

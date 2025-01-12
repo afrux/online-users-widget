@@ -28,27 +28,58 @@ class UserRepository
      */
     protected $cache;
 
+    /**
+     * @var array<callable(): string>
+     */
+    protected static $cacheKeyParameters = [];
+
+    public static function addCacheKeyParameter(callable $parameter)
+    {
+        static::$cacheKeyParameters[] = $parameter;
+    }
+
     public function __construct(SettingsRepositoryInterface $settings, SafeCacheRepositoryAdapter $cache)
     {
         $this->settings = $settings;
         $this->cache = $cache;
     }
 
+    protected function cacheKey(User $actor): string
+    {
+        $params = [
+            $actor->hasPermission('user.viewLastSeenAt') ? 'high-access' : 'low-access'
+        ];
+
+        foreach (self::$cacheKeyParameters as $parameter) {
+            $params[] = $parameter($actor);
+        }
+
+        return 'afrux-online-users-widget.users-' . implode('-', $params);
+    }
+
     public function getLastSeenUsers(User $actor): array
     {
-        $time = Carbon::now()->subMinutes(5);
-        $limit = $this->settings->get('afrux-online-users-widget.max_users', 15);
+        $limit = (int) $this->settings->get('afrux-online-users-widget.max_users');
+        $ttl = (int) $this->settings->get('afrux-online-users-widget.cache_ttl');
+        $interval = (int) $this->settings->get('afrux-online-users-widget.last_seen_interval');
 
-        return $this->cache->remember('afrux-online-users-widget.users', 40, function () use ($actor, $time, $limit) {
-            return User::query()
+        return $this->cache->remember($this->cacheKey($actor), $ttl, function () use ($actor, $limit, $interval) {
+            $users = User::query()
                 ->select('id', 'preferences')
                 ->whereVisibleTo($actor)
-                ->where('last_seen_at', '>', $time)
+                ->where('last_seen_at', '>', Carbon::now()->subMinutes($interval))
                 ->limit($limit + 1)
-                ->get()
-                ->filter(function ($user) {
-                    return (bool)$user->getPreference('discloseOnline');
-                })
+                ->get();
+
+            // user.viewLastSeenAt is a permission that allows viewing online state
+            // regardless of the privacy preference not to be shown.
+            if (! $actor->hasPermission('user.viewLastSeenAt')) {
+                $users = $users->filter(function (User $user) {
+                    return (bool) $user->getPreference('discloseOnline');
+                });
+            }
+
+            return $users
                 ->pluck('id')
                 ->toArray();
         }) ?: [];
@@ -56,6 +87,6 @@ class UserRepository
 
     public function getOnlineUsers(User $actor)
     {
-        return User::whereIn('id', $this->getLastSeenUsers($actor))->get();
+        return User::query()->whereIn('id', $this->getLastSeenUsers($actor))->get();
     }
 }
