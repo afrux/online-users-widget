@@ -36,6 +36,6 @@ class LoadForumOnlineUsersRelationship
 
     public function __invoke(ShowForumController $controller, &$data, ServerRequestInterface $request)
     {
-        $data['onlineUsers'] = $this->repository->getOnlineUsers(RequestUtil::getActor($request)) ?: null;
+        $data['onlineUsers'] = $this->repository->getOnlineUsers(RequestUtil::getActor($request))['users'] ?? null;
     }
 }

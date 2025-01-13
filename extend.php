@@ -32,6 +32,9 @@ return [
         ->attribute('canViewOnlineUsersWidget', function ($serializer) {
             return $serializer->getActor()->hasPermission('viewOnlineUsersWidget');
         })
+        ->attribute('totalOnlineUsers', function (FlarumSerializer\ForumSerializer $serializer) {
+            return resolve(UserRepository::class)->getOnlineUsers($serializer->getActor())['count'] ?? 0;
+        })
         ->hasMany('onlineUsers', FlarumSerializer\UserSerializer::class),
 
     (new Extend\ApiController(ShowForumController::class))

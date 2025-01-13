@@ -4,5 +4,6 @@ import type User from 'flarum/common/models/User';
 
 export default [
   new Extend.Model(Forum) //
+    .attribute<number>('totalOnlineUsers')
     .hasMany<User>('onlineUsers'),
 ];
