@@ -27,7 +27,6 @@ export default class OnlineUsersWidget extends Widget<WidgetAttrs> {
       return <LoadingIndicator />;
     }
 
-    const max = app.forum.attribute<number>('afrux-online-users-widget.max_users') || 15;
     const users = app.forum.onlineUsers() || [];
     const total = app.forum.totalOnlineUsers() || 0;
 
@@ -42,9 +41,9 @@ export default class OnlineUsersWidget extends Widget<WidgetAttrs> {
               <Tooltip text={user.displayName()}>{avatar(user)}</Tooltip>
             </Link>
           ))}
-          {total > max ? (
+          {total > users.length ? (
             <span className="Afrux-OnlineUsersWidget-users-item Afrux-OnlineUsersWidget-users-item--plus">
-              <span className="Avatar">{`+${total - max}`}</span>
+              <span className="Avatar">{`+${total - users.length}`}</span>
             </span>
           ) : null}
         </div>
